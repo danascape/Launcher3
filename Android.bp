@@ -57,6 +57,7 @@ filegroup {
     srcs: [
         "quickstep/src/**/*.kt",
         "quickstep/src/**/*.java",
+        "quickstep/src/**/I*.aidl",
     ],
     device_common_srcs: [
         ":launcher-quickstep-processed-protolog-src",
@@ -514,6 +515,9 @@ android_library {
         ":launcher-quickstep-dagger",
         ":launcher-build-config",
     ],
+    aidl: {
+        local_include_dirs: ["quickstep/src"],
+    },
     resource_dirs: [],
     libs: [
         "framework-statsd.stubs.module_lib",

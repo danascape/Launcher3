@@ -18,4 +18,7 @@
     <privapp-permissions package="com.android.launcher3">
         <permission name="android.permission.ACCESS_CONTEXTUAL_SEARCH" />
     </privapp-permissions>
+    <privapp-permissions package="dev.danascape.launcher3feed.helloworld">
+        <permission name="android.permission.BIND_APPWIDGET" />
+    </privapp-permissions>
 </permissions>

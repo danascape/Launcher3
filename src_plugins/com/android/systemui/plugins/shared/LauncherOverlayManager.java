@@ -15,6 +15,9 @@
  */
 package com.android.systemui.plugins.shared;
 
+import android.app.Activity;
+import android.app.Application;
+import android.os.Bundle;
 import android.view.MotionEvent;
 
 import java.io.PrintWriter;
@@ -22,7 +25,13 @@ import java.io.PrintWriter;
 /**
  * Interface to control the overlay on Launcher
  */
-public interface LauncherOverlayManager {
+public interface LauncherOverlayManager extends Application.ActivityLifecycleCallbacks {
+
+    default void onDeviceProvideChanged() { }
+
+    default void onAttachedToWindow() { }
+
+    default void onDetachedFromWindow() { }
 
     default void dump(String prefix, PrintWriter w) { }
 
@@ -34,7 +43,26 @@ public interface LauncherOverlayManager {
 
     default void hideOverlay(int duration) { }
 
-    default void onActivityDestroyed() { }
+    @Override
+    default void onActivityCreated(Activity activity, Bundle bundle) { }
+
+    @Override
+    default void onActivityStarted(Activity activity) { }
+
+    @Override
+    default void onActivityResumed(Activity activity) { }
+
+    @Override
+    default void onActivityPaused(Activity activity) { }
+
+    @Override
+    default void onActivityStopped(Activity activity) { }
+
+    @Override
+    default void onActivitySaveInstanceState(Activity activity, Bundle bundle) { }
+
+    @Override
+    default void onActivityDestroyed(Activity activity) { }
 
     default void onDisallowSwipeToMinusOnePage() {}
 
