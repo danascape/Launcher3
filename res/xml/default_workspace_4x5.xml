@@ -17,8 +17,8 @@
 <!-- Short-panel fallback for the 4 column grid; see spec_row_count_4_col.xml. Same shape as
      default_workspace_4x6, with the second widget dropped to fit five rows:
 
-       row 0    left free
-       row 1-2  clock widget, profile switcher on the right edge
+       row 0    At a Glance, pinned by the launcher (see default_workspace_4x6)
+       row 1-2  weather widget, profile switcher on the right edge
        row 3    free
        row 4    bottom anchored icon row, addressed as y="-1" -->
 
@@ -67,8 +67,8 @@
     </resolve>
 
     <appwidget
-        launcher:packageName="com.android.deskclock"
-        launcher:className="com.android.alarmclock.AnalogAppWidgetProvider"
+        launcher:packageName="com.google.android.apps.weather"
+        launcher:className="com.google.android.apps.weather.widget.CurrentForecastWidgetReceiver"
         launcher:screen="0"
         launcher:x="0"
         launcher:y="1"

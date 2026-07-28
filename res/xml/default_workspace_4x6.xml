@@ -16,14 +16,16 @@
 
 <!-- First screen, laid out the way Pixel lays out 4x6:
 
-       row 0    left free (Pixel pins At a Glance here; we have no smartspace)
+       row 0    At a Glance
        row 1-2  breathing room, plus the profile switcher on the right edge
        row 3-4  a pair of 2x2 widgets
        row 5    bottom anchored icon row, addressed as y="-1"
 
-     Nothing is placed on row 0 on purpose. Adding a full width widget there is what
-     produced the second search bar in the old layout, since Hotseat always shows its
-     own QSB in portrait. -->
+     Nothing is placed on row 0 on purpose. QSB_ON_FIRST_SCREEN is on, so the launcher
+     pins search_container_workspace there itself (SearchLauncher's SmartspaceQsbWidget)
+     and LoaderCursor marks the whole row occupied. An <appwidget> at y="0" would be
+     rejected as overlapping. To change which widget appears there, edit
+     SmartspaceQsbWidget.WIDGET_CLASS_NAME, not this file. -->
 
 <favorites xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher3">
 
@@ -81,11 +83,10 @@
         launcher:spanX="1"
         launcher:spanY="2" />
 
-    <!-- Widget pair on rows 3-4. Pixel ships weather + Gemini here; neither has an
-         equivalent in this tree, so we use the two 2x2 widgets we do ship. -->
+    <!-- Widget pair on rows 3-4: weather on the left, Gemini on the right, same as Pixel. -->
     <appwidget
-        launcher:packageName="com.android.deskclock"
-        launcher:className="com.android.alarmclock.AnalogAppWidgetProvider"
+        launcher:packageName="com.google.android.apps.weather"
+        launcher:className="com.google.android.apps.weather.widget.CurrentForecastWidgetReceiver"
         launcher:screen="0"
         launcher:x="0"
         launcher:y="3"
@@ -93,8 +94,8 @@
         launcher:spanY="2" />
 
     <appwidget
-        launcher:packageName="org.lineageos.etar"
-        launcher:className="com.android.calendar.widget.CalendarAppWidgetProvider"
+        launcher:packageName="com.google.android.apps.bard"
+        launcher:className="com.google.android.apps.bard.widget.RobinToolBarAppWidgetReceiver"
         launcher:screen="0"
         launcher:x="2"
         launcher:y="3"
