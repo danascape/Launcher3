@@ -121,6 +121,17 @@
             launcher:className="com.google.android.apps.photos.home.HomeActivity"/>
     </folder>
 
+    <!-- IronDroid profile switcher: right-hand column, directly above the Play
+         Store icon. 1x2 renders the stacked-chip layout (all three profiles). -->
+    <appwidget
+        launcher:packageName="org.lineageos.setupwizard"
+        launcher:className="org.lineageos.setupwizard.irondroid.qs.ProfileSwitchWidgetProvider"
+        launcher:screen="0"
+        launcher:x="4"
+        launcher:y="4"
+        launcher:spanX="1"
+        launcher:spanY="2" />
+
     <favorite
         launcher:screen="0"
         launcher:x="4"

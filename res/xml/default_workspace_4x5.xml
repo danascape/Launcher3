@@ -68,13 +68,15 @@
         launcher:spanX="4"
         launcher:spanY="1" />
 
+    <!-- spanX is 3, not the grid width: the right-hand column on this row is taken by the
+         IronDroid profile switcher below. -->
     <appwidget
         launcher:packageName="com.android.deskclock"
         launcher:className="com.android.alarmclock.DigitalAppWidgetProvider"
         launcher:screen="0"
         launcher:x="0"
         launcher:y="1"
-        launcher:spanX="4"
+        launcher:spanX="3"
         launcher:spanY="1" />
 
     <!-- Google folder -->
@@ -112,6 +114,17 @@
             launcher:packageName="com.google.android.apps.photos"
             launcher:className="com.google.android.apps.photos.home.HomeActivity"/>
     </folder>
+
+    <!-- IronDroid profile switcher: right-hand column, directly above the Play
+         Store icon. 1x2 renders the stacked-chip layout (all three profiles). -->
+    <appwidget
+        launcher:packageName="org.lineageos.setupwizard"
+        launcher:className="org.lineageos.setupwizard.irondroid.qs.ProfileSwitchWidgetProvider"
+        launcher:screen="0"
+        launcher:x="3"
+        launcher:y="1"
+        launcher:spanX="1"
+        launcher:spanY="2" />
 
     <favorite
         launcher:screen="0"
