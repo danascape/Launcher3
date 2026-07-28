@@ -17,17 +17,18 @@
 
 <profiles xmlns:launcher="http://schemas.android.com/apk/res-auto" >
 
+    <!-- The default handheld grid. Name is kept as "4_by_5" because it is the persisted
+         GRID_NAME key; the actual row count now comes from spec_row_count_4_col, which
+         resolves to 4x6 on phones. -->
     <grid-option
         launcher:name="4_by_5"
-        launcher:numRows="5"
-        launcher:numColumns="4"
+        launcher:gridType="one_grid"
+        launcher:gridSizeSpecsId="@xml/spec_row_count_4_col"
         launcher:numFolderRows="3"
         launcher:numFolderColumns="3"
         launcher:numHotseatIcons="4"
         launcher:numExtendedHotseatIcons="6"
-        launcher:dbFile="launcher_4_by_5.db"
         launcher:inlineNavButtonsEndSpacing="@dimen/taskbar_button_margin_split"
-        launcher:defaultLayoutId="@xml/default_workspace_4x5"
         launcher:deviceCategory="phone|multi_display" >
 
         <display-option
@@ -47,8 +48,13 @@
 
     </grid-option>
 
+    <!-- Safety net for the case where the one_grid_specs flag is off: filterByFlag() then
+         disables every one_grid option, and this is the grid that carries canBeDefault.
+         While the flag is on (the normal case) this option is filtered out entirely, so
+         4_by_5 is the only default candidate on handhelds. -->
     <grid-option
         launcher:name="5_by_5"
+        launcher:gridType="non_one_grid"
         launcher:numRows="5"
         launcher:numColumns="5"
         launcher:numFolderRows="4"
@@ -109,6 +115,7 @@
         launcher:defaultLayoutId="@xml/default_workspace_5x6"
         launcher:deviceCategory="phone|multi_display" >
 
+        <!-- Selectable in the grid picker, but never the out-of-box default. -->
         <display-option
             launcher:name="Large Phone"
             launcher:minWidthDps="406"
@@ -118,8 +125,7 @@
             launcher:allAppsBorderSpace="16"
             launcher:allAppsCellHeight="104"
             launcher:startAlignTaskbar="true"
-            launcher:startAlignTaskbarLandscape="true"
-            launcher:canBeDefault="true" />
+            launcher:startAlignTaskbarLandscape="true" />
 
     </grid-option>
 
@@ -134,6 +140,7 @@
         launcher:defaultLayoutId="@xml/default_workspace_5x7"
         launcher:deviceCategory="phone|multi_display" >
 
+        <!-- Selectable in the grid picker, but never the out-of-box default. -->
         <display-option
             launcher:name="Large Phone"
             launcher:minWidthDps="406"
@@ -143,8 +150,7 @@
             launcher:allAppsBorderSpace="16"
             launcher:allAppsCellHeight="104"
             launcher:startAlignTaskbar="true"
-            launcher:startAlignTaskbarLandscape="true"
-            launcher:canBeDefault="true" />
+            launcher:startAlignTaskbarLandscape="true" />
 
     </grid-option>
 
@@ -208,6 +214,7 @@
         launcher:defaultLayoutId="@xml/default_workspace_6x6"
         launcher:deviceCategory="phone|multi_display" >
 
+        <!-- Selectable in the grid picker, but never the out-of-box default. -->
         <display-option
             launcher:name="Large Phone"
             launcher:minWidthDps="406"
@@ -217,8 +224,7 @@
             launcher:allAppsBorderSpace="16"
             launcher:allAppsCellHeight="104"
             launcher:startAlignTaskbar="true"
-            launcher:startAlignTaskbarLandscape="true"
-            launcher:canBeDefault="true" />
+            launcher:startAlignTaskbarLandscape="true" />
 
     </grid-option>
 
