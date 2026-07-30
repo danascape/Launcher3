@@ -140,6 +140,7 @@ import com.android.launcher3.apppairs.AppPairIcon;
 import com.android.launcher3.appprediction.PredictionRowView;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.desktop.DesktopRecentsTransitionController;
+import com.android.launcher3.hub.GlanceableHubOverlay;
 import com.android.launcher3.hybridhotseat.HotseatPredictionController;
 import com.android.launcher3.logging.InstanceId;
 import com.android.launcher3.logging.StatsLogManager;
@@ -326,6 +327,12 @@ public class QuickstepLauncher extends Launcher implements RecentsViewContainer,
 
     @Override
     protected LauncherOverlayManager getDefaultOverlay() {
+        // Prefer the glanceable hub when SystemUI exposes it: it is the only overlay that works
+        // without the Google app, whose LauncherClient binds a service in a hardcoded package.
+        GlanceableHubOverlay hubOverlay = new GlanceableHubOverlay(this);
+        if (hubOverlay.isSupported()) {
+            return hubOverlay;
+        }
         return new OverlayCallbackImpl(this);
     }
 

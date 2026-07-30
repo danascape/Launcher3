@@ -45,6 +45,9 @@
 
     <uses-permission android:name="android.permission.SYSTEM_APPLICATION_OVERLAY" />
 
+    <!-- Lets the "-1" page render the glanceable hub's widgets, which are hosted by SystemUI. -->
+    <uses-permission android:name="com.android.systemui.permission.ACCESS_GLANCEABLE_HUB" />
+
     <!--
     Permission required to access profiles which are otherwise hidden
     from being visible via APIs, e.g. private profile.
