@@ -24,7 +24,6 @@ import android.os.UserManager
 import android.os.UserManager.USER_TYPE_PROFILE_CLONE
 import android.os.UserManager.USER_TYPE_PROFILE_MANAGED
 import android.os.UserManager.USER_TYPE_PROFILE_PRIVATE
-import android.provider.Settings
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.android.launcher3.Utilities.ATLEAST_U
@@ -111,9 +110,7 @@ constructor(@ApplicationContext private val context: Context, tracker: DaggerSin
                 CachedUserInfo(
                     UserIconInfo(
                         user = user,
-                        type =
-                            suwProfileType(user)
-                                ?: if (isWork) UserIconInfo.TYPE_WORK else UserIconInfo.TYPE_MAIN,
+                        type = if (isWork) UserIconInfo.TYPE_WORK else UserIconInfo.TYPE_MAIN,
                         userSerial = getSerialNumberForUser(user),
                     ),
                     isUnlocked = isUserUnlocked(user),
@@ -130,41 +127,19 @@ constructor(@ApplicationContext private val context: Context, tracker: DaggerSin
                     UserIconInfo(
                         user = user,
                         type =
-                            suwProfileType(user)
-                                ?: when (userType) {
-                                    null -> UserIconInfo.TYPE_MAIN
-                                    USER_TYPE_PROFILE_MANAGED -> UserIconInfo.TYPE_WORK
-                                    USER_TYPE_PROFILE_CLONE -> UserIconInfo.TYPE_CLONED
-                                    USER_TYPE_PROFILE_PRIVATE -> UserIconInfo.TYPE_PRIVATE
-                                    else -> UserIconInfo.TYPE_MAIN
-                                },
+                            when (userType) {
+                                null -> UserIconInfo.TYPE_MAIN
+                                USER_TYPE_PROFILE_MANAGED -> UserIconInfo.TYPE_WORK
+                                USER_TYPE_PROFILE_CLONE -> UserIconInfo.TYPE_CLONED
+                                USER_TYPE_PROFILE_PRIVATE -> UserIconInfo.TYPE_PRIVATE
+                                else -> UserIconInfo.TYPE_MAIN
+                            },
                         userSerial = it.userSerialNumber.toLong(),
                     ),
                 isUnlocked = fetchSafe(false) { isUserUnlocked(user) },
                 isQuietModeEnabled = fetchSafe(false) { isQuietModeEnabled(user) },
                 preInstallApps = launcherApps.getPreInstalledSystemPackages(user).toSet(),
             )
-        }
-    }
-
-    /**
-     * IronDroid: the owner (personal), Home (privacy) and Work users are full secondary users, not
-     * managed profiles, so the platform cannot tell them apart. Classify them by the user ids that
-     * SetupWizard persists in Settings.Global, so each gets its own launcher icon badge. Returns the
-     * matching [UserIconInfo] type, or null to fall back to the platform classification.
-     */
-    private fun suwProfileType(user: UserHandle): Int? {
-        val resolver = context.contentResolver
-        val workId = Settings.Global.getInt(resolver, SUW_WORK_USER_ID, -1)
-        val homeId = Settings.Global.getInt(resolver, SUW_HOME_USER_ID, -1)
-        // UserHandle.hashCode() returns the user id (public API; the icon library keys on it the
-        // same way), which avoids the @hide UserHandle.getIdentifier() so this compiles on the
-        // non-platform_apis launcher variant too.
-        return when (user.hashCode()) {
-            workId -> UserIconInfo.TYPE_WORK
-            homeId -> UserIconInfo.TYPE_HOME
-            0 -> UserIconInfo.TYPE_OWNER // system user == owner / personal
-            else -> null
         }
     }
 
@@ -223,11 +198,6 @@ constructor(@ApplicationContext private val context: Context, tracker: DaggerSin
 
     companion object {
         private const val TAG = "UserCache"
-
-        // IronDroid: Settings.Global keys written by SetupWizard (SetupWizardUtils) identifying the
-        // Work and Home full-secondary users. Kept in sync with that app.
-        private const val SUW_WORK_USER_ID = "suw_work_user_id"
-        private const val SUW_HOME_USER_ID = "suw_home_user_id"
 
         @JvmField var INSTANCE = DaggerSingletonObject { it.userCache }
 
