@@ -148,10 +148,10 @@ constructor(@ApplicationContext private val context: Context, tracker: DaggerSin
     }
 
     /**
-     * IronDroid: the Home (privacy) and Work users are full secondary users, not managed profiles,
-     * so the platform cannot tell them apart. Classify them by the user ids that SetupWizard
-     * persists in Settings.Global, so each gets its own launcher icon badge. Returns the matching
-     * [UserIconInfo] type, or null to fall back to the platform classification.
+     * IronDroid: the owner (personal), Home (privacy) and Work users are full secondary users, not
+     * managed profiles, so the platform cannot tell them apart. Classify them by the user ids that
+     * SetupWizard persists in Settings.Global, so each gets its own launcher icon badge. Returns the
+     * matching [UserIconInfo] type, or null to fall back to the platform classification.
      */
     private fun suwProfileType(user: UserHandle): Int? {
         val resolver = context.contentResolver
@@ -163,6 +163,7 @@ constructor(@ApplicationContext private val context: Context, tracker: DaggerSin
         return when (user.hashCode()) {
             workId -> UserIconInfo.TYPE_WORK
             homeId -> UserIconInfo.TYPE_HOME
+            0 -> UserIconInfo.TYPE_OWNER // system user == owner / personal
             else -> null
         }
     }
