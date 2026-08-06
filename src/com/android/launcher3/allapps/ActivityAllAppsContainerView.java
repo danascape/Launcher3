@@ -43,13 +43,9 @@ import android.graphics.Path.Direction;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.database.ContentObserver;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Parcelable;
 import android.os.Process;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -122,11 +118,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
 
     private static final String TAG = "ActivityAllAppsContainerView";
     public static final float PULL_MULTIPLIER = .02f;
-
-    // Settings.Secure key written by SetupWizard's ProfileSwitchTileService.
-    private static final String SETTING_ACTIVE_PROFILE = "suw_active_profile";
-    private static final int PROFILE_USER = 0;
-    private static final int PROFILE_WORK = 1;
     public static final float FLING_VELOCITY_MULTIPLIER = 1200f;
     protected static final String BUNDLE_KEY_CURRENT_PAGE = "launcher.allapps.current_page";
     // As of this writing, search transition does not seem to work properly, so set duration to 0.
@@ -195,13 +186,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     private int mBottomSheetBackgroundColorLegacy;
     private int mTabsProtectionAlpha;
     @Nullable private AllAppsTransitionController mAllAppsTransitionController;
-    private final ContentObserver mActiveProfileObserver = new ContentObserver(
-            new Handler(Looper.getMainLooper())) {
-        @Override
-        public void onChange(boolean selfChange) {
-            rebindAdapters(true /* force */);
-        }
-    };
 
     public ActivityAllAppsContainerView(Context context) {
         this(context, null);
@@ -355,17 +339,12 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             mSearchUiDelegate.onInitializeSearchBar();
         }
         mActivityContext.addOnDeviceProfileChangeListener(this);
-        getContext().getContentResolver().registerContentObserver(
-                Settings.Secure.getUriFor(SETTING_ACTIVE_PROFILE),
-                false /* notifyForDescendants */,
-                mActiveProfileObserver);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mActivityContext.removeOnDeviceProfileChangeListener(this);
-        getContext().getContentResolver().unregisterContentObserver(mActiveProfileObserver);
     }
 
     public SearchUiManager getSearchUiManager() {
@@ -667,7 +646,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         } else {
             mainRecyclerView = findViewById(R.id.apps_list_view);
             workRecyclerView = null;
-            mAH.get(AdapterHolder.MAIN).setup(mainRecyclerView, getActiveProfileMatcher());
+            mAH.get(AdapterHolder.MAIN).setup(mainRecyclerView, mPersonalMatcher);
             mAH.get(AdapterHolder.WORK).mRecyclerView = null;
         }
         setUpCustomRecyclerViewPool(
@@ -1087,19 +1066,12 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     @VisibleForTesting
     public void onAppsUpdated() {
         Log.d(TAG, "onAppsUpdated; number of apps: " + mAllAppsStore.getApps().length);
-        boolean prevHasWorkApps = mHasWorkApps;
         mHasWorkApps = Stream.of(mAllAppsStore.getApps())
                 .anyMatch(mWorkManager.getItemInfoMatcher());
         mHasPrivateApps = Stream.of(mAllAppsStore.getApps())
                 .anyMatch(mPrivateProfileManager.getItemInfoMatcher());
         if (!isSearching()) {
-            // Force rebind when work app availability changes so getActiveProfileMatcher()
-            // re-evaluates with the correct (now-populated) work matcher.
-            if (prevHasWorkApps != mHasWorkApps) {
-                rebindAdapters(true /* force */);
-            } else {
-                rebindAdapters();
-            }
+            rebindAdapters();
         }
         if (mHasWorkApps) {
             mWorkManager.reset();
@@ -1335,21 +1307,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     /**
-     * Always returns false: instead of showing Personal + Work tabs simultaneously we show a
-     * single list filtered to the profile chosen by the QS Profile Switch tile
-     * (stored in Settings.Secure#suw_active_profile).
+     * Returns true if the container has work apps.
      */
     public boolean shouldShowTabs() {
-        return false;
-    }
-
-    private Predicate<ItemInfo> getActiveProfileMatcher() {
-        int activeProfile = Settings.Secure.getInt(getContext().getContentResolver(),
-                SETTING_ACTIVE_PROFILE, PROFILE_USER);
-        if (activeProfile == PROFILE_WORK) {
-            return mWorkManager.getItemInfoMatcher();
-        }
-        return mPersonalMatcher;
+        return mHasWorkApps;
     }
 
     // Used by tests only
