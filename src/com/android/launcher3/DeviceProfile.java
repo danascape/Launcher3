@@ -696,7 +696,14 @@ public class DeviceProfile {
      * necessary.
      */
     public void recalculateHotseatWidthAndBorderSpace() {
-        if (!mIsScalableGrid) return;
+        if (!mIsScalableGrid) {
+            // Hotseat measures its QSB EXACTLY hotseatQsbWidth wide, so leaving this at the 0 it
+            // is initialized to hides the search widget on every non scalable grid, which is all
+            // the phone grids. AOSP never hits it because it ships no hotseat QSB. The non inline
+            // branch of calculateQsbWidth only needs mHotseatColumnSpan, set unconditionally.
+            hotseatQsbWidth = calculateQsbWidth(hotseatBorderSpace);
+            return;
+        }
 
         updateHotseatWidthAndBorderSpace(inv.numColumns);
         int numWorkspaceColumns = getPanelCount() * inv.numColumns;
