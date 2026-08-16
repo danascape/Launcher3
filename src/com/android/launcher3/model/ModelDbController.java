@@ -34,8 +34,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Process;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseIntArray;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -50,6 +52,7 @@ import com.android.launcher3.LauncherFiles;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
+import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger.RestoreError;
@@ -81,6 +84,24 @@ public class ModelDbController {
     private static final String EMPTY_DATABASE_CREATED = "EMPTY_DATABASE_CREATED";
     public static final String EXTRA_DB_NAME = "db_name";
     public static final String DATA_TYPE_DB_FILE = "database_file";
+
+    // IronDroid: Settings.Global key written by SetupWizard (SetupWizardUtils) identifying the
+    // Home user. Kept in sync with that app.
+    private static final String SUW_HOME_USER_ID = "suw_home_user_id";
+
+    /**
+     * Shared default workspace layout to the Home user's variant of it. Grids absent from this map
+     * use the shared layout for every user.
+     */
+    private static final SparseIntArray HOME_USER_LAYOUTS = new SparseIntArray();
+
+    static {
+        HOME_USER_LAYOUTS.put(R.xml.default_workspace_4x5, R.xml.default_workspace_4x5_home);
+        HOME_USER_LAYOUTS.put(R.xml.default_workspace_5x5, R.xml.default_workspace_5x5_home);
+        HOME_USER_LAYOUTS.put(R.xml.default_workspace_5x6, R.xml.default_workspace_5x6_home);
+        HOME_USER_LAYOUTS.put(R.xml.default_workspace_5x7, R.xml.default_workspace_5x7_home);
+        HOME_USER_LAYOUTS.put(R.xml.default_workspace_6x6, R.xml.default_workspace_6x6_home);
+    }
 
     protected DatabaseHelper mOpenHelper;
 
@@ -580,7 +601,27 @@ public class ModelDbController {
 
     private DefaultLayoutParser getDefaultLayoutParser(LauncherWidgetHolder widgetHolder) {
         return new DefaultLayoutParser(mContext, widgetHolder,
-                mOpenHelper, mContext.getResources(), mIdp.defaultLayoutId);
+                mOpenHelper, mContext.getResources(), getDefaultLayoutId());
+    }
+
+    /**
+     * Returns the default workspace layout to load for the user this launcher runs as.
+     *
+     * <p>IronDroid: the owner, Home and Work users are full secondary users rather than managed
+     * profiles, so each runs its own launcher against its own database and loads this
+     * independently. The Home user gets a layout of its own where one exists; every other user,
+     * and every grid without a Home variant, falls back to the shared layout.
+     */
+    private int getDefaultLayoutId() {
+        int homeUserId = Settings.Global.getInt(
+                mContext.getContentResolver(), SUW_HOME_USER_ID, -1);
+        // UserHandle#hashCode() returns the user id. It stands in for the @hide
+        // UserHandle#getIdentifier() so that this still compiles for the Launcher3 variant that
+        // builds against the public SDK rather than platform_apis.
+        if (homeUserId < 0 || Process.myUserHandle().hashCode() != homeUserId) {
+            return mIdp.defaultLayoutId;
+        }
+        return HOME_USER_LAYOUTS.get(mIdp.defaultLayoutId, mIdp.defaultLayoutId);
     }
 
     private ConstantItem<Boolean> getEmptyDbCreatedKey() {

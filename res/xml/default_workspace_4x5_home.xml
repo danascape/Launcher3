@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2009 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<!-- Home user variant of default_workspace_4x5. Identical to it apart from the privacy dashboard
+     widget below; see ModelDbController#getDefaultLayoutId().
+
+     Short-panel fallback for the 4 column grid; see spec_row_count_4_col.xml. Same shape as
+     default_workspace_4x6, with the second widget dropped to fit five rows:
+
+       row 0    At a Glance, pinned by the launcher (see default_workspace_4x6)
+       row 1-2  weather widget, profile switcher on the right edge
+       row 3    privacy dashboard, full width
+       row 4    bottom anchored icon row, addressed as y="-1" -->
+
+<favorites xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher3">
+
+    <!-- Hotseat (We use the screen as the position of the item in the hotseat) -->
+    <!-- Dialer, Messaging, Browser, Camera -->
+    <resolve
+        launcher:container="-101"
+        launcher:screen="0"
+        launcher:x="0"
+        launcher:y="0" >
+        <favorite launcher:uri="#Intent;action=android.intent.action.DIAL;end" />
+        <favorite launcher:uri="tel:123" />
+        <favorite launcher:uri="#Intent;action=android.intent.action.CALL_BUTTON;end" />
+    </resolve>
+
+    <resolve
+        launcher:container="-101"
+        launcher:screen="1"
+        launcher:x="1"
+        launcher:y="0" >
+        <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_MESSAGING;end" />
+        <favorite launcher:uri="sms:" />
+        <favorite launcher:uri="smsto:" />
+        <favorite launcher:uri="mms:" />
+        <favorite launcher:uri="mmsto:" />
+    </resolve>
+
+    <resolve
+         launcher:container="-101"
+         launcher:screen="2"
+         launcher:x="2"
+         launcher:y="0" >
+        <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_BROWSER;end" />
+        <favorite launcher:uri="http://www.example.com/" />
+    </resolve>
+
+    <resolve
+        launcher:container="-101"
+        launcher:screen="3"
+        launcher:x="3"
+        launcher:y="0" >
+        <favorite launcher:uri="#Intent;action=android.media.action.STILL_IMAGE_CAMERA;end" />
+        <favorite launcher:uri="#Intent;action=android.intent.action.CAMERA_BUTTON;end" />
+    </resolve>
+
+    <appwidget
+        launcher:packageName="com.google.android.apps.weather"
+        launcher:className="com.google.android.apps.weather.widget.CurrentForecastWidgetReceiver"
+        launcher:screen="0"
+        launcher:x="0"
+        launcher:y="1"
+        launcher:spanX="2"
+        launcher:spanY="2" />
+
+    <!-- IronDroid profile switcher: right-hand column, rows 1-2. 1x2 renders the
+         stacked-chip layout (all three profiles). -->
+    <appwidget
+        launcher:packageName="org.lineageos.setupwizard"
+        launcher:className="org.lineageos.setupwizard.irondroid.qs.ProfileSwitchWidgetProvider"
+        launcher:screen="0"
+        launcher:x="3"
+        launcher:y="1"
+        launcher:spanX="1"
+        launcher:spanY="2" />
+
+    <!-- Privacy dashboard. Rows 1-2 are taken by the weather widget and the profile switcher, so
+         this is the only free block left: row 3, full width. -->
+    <appwidget
+        launcher:packageName="com.android.permissioncontroller"
+        launcher:className="com.android.permissioncontroller.permission.ui.widget.v31.PrivacyDashboardWidgetProvider"
+        launcher:screen="0"
+        launcher:x="0"
+        launcher:y="3"
+        launcher:spanX="4"
+        launcher:spanY="1" />
+
+    <!-- Bottom row. y="-1" resolves to the last row via convertToDistanceFromEnd(). -->
+    <favorite
+        launcher:screen="0"
+        launcher:x="0"
+        launcher:y="-1"
+        launcher:packageName="com.android.vending"
+        launcher:className="com.android.vending.AssetBrowserActivity" />
+
+    <favorite
+        launcher:screen="0"
+        launcher:x="1"
+        launcher:y="-1"
+        launcher:packageName="com.google.android.gm"
+        launcher:className="com.google.android.gm.ConversationListActivityGmail" />
+
+    <favorite
+        launcher:screen="0"
+        launcher:x="2"
+        launcher:y="-1"
+        launcher:packageName="com.google.android.apps.photos"
+        launcher:className="com.google.android.apps.photos.home.HomeActivity" />
+
+    <favorite
+        launcher:screen="0"
+        launcher:x="3"
+        launcher:y="-1"
+        launcher:packageName="com.google.android.youtube"
+        launcher:className="com.google.android.youtube.app.honeycomb.Shell$HomeActivity" />
+
+</favorites>
