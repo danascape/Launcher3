@@ -28,8 +28,8 @@ import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.LauncherApps;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -92,7 +92,6 @@ public class SettingsActivity extends FragmentActivity
     private static final int DELAY_HIGHLIGHT_DURATION_MILLIS = 600;
     public static final String SAVE_HIGHLIGHTED_KEY = "android:preference_highlighted";
 
-    private static final String KEY_MINUS_ONE = "pref_enable_minus_one";
     private static final String SEARCH_PACKAGE = "com.google.android.googlequicksearchbox";
     public static final String KEY_TRUST_APPS = "pref_trust_apps";
 
@@ -356,9 +355,6 @@ public class SettingsActivity extends FragmentActivity
                             }
                     );
                     return !info.isLargeScreen(info.realBounds);
-                case KEY_MINUS_ONE:
-                    return launcherApps != null &&
-                            launcherApps.isPackageEnabled(SEARCH_PACKAGE, myUserHandle());
                 case KEY_SUGGESTIONS:
                     return launcherApps != null &&
                             launcherApps.isPackageEnabled(SUGGESTIONS_PACKAGE, myUserHandle());
